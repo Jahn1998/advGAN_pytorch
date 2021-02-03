@@ -68,9 +68,9 @@ class AdvGAN_Attack:
             loss_D_real.backward()
 
             pred_fake = self.netDisc(adv_images.detach())
-            loss_D_fake = F.mse_loss(pred_fake, torch.zeros_like(pred_fake, device=self.device))
+            loss_D_fake = F.mse_loss(pred_fake, torch.zeros_like(pred_fake, device=self.device))# 这一步不是应该有 1-pred.fake 吗
             loss_D_fake.backward()
-            loss_D_GAN = loss_D_fake + loss_D_real
+            loss_D_GAN = loss_D_fake + loss_D_real # 应该在这里再加一项PGD的扰动
             self.optimizer_D.step()
 
         # optimize G
