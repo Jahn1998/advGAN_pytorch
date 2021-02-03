@@ -54,6 +54,45 @@ class AdvGAN_Attack:
             os.makedirs(models_path)
 
     def train_batch(self, x, labels):
+#         # PGD Attack
+#         def perturb(self, x_nat, y, sess):
+#     """Given a set of examples (x_nat, y), returns a set of adversarial
+#        examples within epsilon of x_nat in l_infinity norm."""
+#     if self.rand:
+#       x = x_nat + np.random.uniform(-self.epsilon, self.epsilon, x_nat.shape)
+#       x = np.clip(x, 0, 1) # ensure valid pixel range
+#     else:
+#       x = np.copy(x_nat)
+
+#     for i in range(self.k):
+#       grad = sess.run(self.grad, feed_dict={self.model.x_input: x,
+#                                             self.model.y_input: y})
+
+#       x += self.a * np.sign(grad)
+
+#       x = np.clip(x, x_nat - self.epsilon, x_nat + self.epsilon) 
+#       x = np.clip(x, 0, 1) # ensure valid pixel range
+
+#     return x
+        # PGD Attack
+        self.a = 0.01
+        self.k = 0.05
+        x_nat=np.copy(x)
+        if self.rand:
+            x = x_nat + np.random.uniform(-self.epsilon, self.epsilon, x_nat.shape)
+            x = np.clip(x, 0, 1) # ensure valid pixel range
+        else:
+            x = np.copy(x_nat)
+            
+        for i in range(self.k): # k 为 迭代的次数
+            grad = sess.run(self.grad, feed_dict={self.model.x_input: x,
+                                            self.model.y_input: label})
+
+            x += self.a * np.sign(grad) # a 为 学习率
+
+            x = np.clip(x, x_nat - self.epsilon, x_nat + self.epsilon) 
+            x = np.clip(x, 0, 1) # ensure valid pixel range
+
         # optimize D
         for i in range(1):
             perturbation = self.netG(x)
